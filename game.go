@@ -12,6 +12,7 @@ type Game struct {
 	blocks       []blocks.Block
 	currentBlock blocks.Block
 	nextBlock    blocks.Block
+	GameOver     bool
 }
 
 func NewGame() Game {
@@ -20,10 +21,11 @@ func NewGame() Game {
 	g.blocks = GetAllBlocks()
 	g.currentBlock = g.GetRandomBlock()
 	g.nextBlock = g.GetRandomBlock()
+	g.GameOver = false
 	return g
 }
 
-func (game Game) GetRandomBlock() blocks.Block {
+func (game *Game) GetRandomBlock() blocks.Block {
 	if len(game.blocks) == 0 {
 		game.blocks = GetAllBlocks()
 	}
@@ -55,44 +57,59 @@ func (game Game) Draw() {
 }
 
 func (game *Game) HandleInput() {
-	keyPressed := rl.GetKeyPressed()
-	switch keyPressed {
-	case rl.KeyLeft:
+	if game.GameOver && rl.IsKeyPressed(rl.KeyEnter) {
+		game.Reset()
+	}
+	switch {
+	case rl.IsKeyPressed(rl.KeyLeft):
 		game.MoveBlockLeft()
-	case rl.KeyRight:
+	case rl.IsKeyPressed(rl.KeyRight):
 		game.MoveBlockRight()
-	case rl.KeyDown:
+	case rl.IsKeyDown(rl.KeyDown):
 		game.MoveBlockDown()
-	case rl.KeyUp:
+	case rl.IsKeyPressed(rl.KeyUp):
 		game.RotateBlock()
 	}
 }
 
 func (game *Game) MoveBlockLeft() {
+	if game.GameOver {
+		return
+	}
 	game.currentBlock.Move(0, -1)
-	if game.IsBlockOutside() {
+	if game.IsBlockOutside() || !game.BlockFits() {
 		game.currentBlock.Move(0, 1)
 	}
 }
 
 func (game *Game) MoveBlockRight() {
+	if game.GameOver {
+		return
+	}
 	game.currentBlock.Move(0, 1)
-	if game.IsBlockOutside() {
+	if game.IsBlockOutside() || !game.BlockFits() {
 		game.currentBlock.Move(0, -1)
 	}
 }
 
 func (game *Game) MoveBlockDown() {
+	if game.GameOver {
+		return
+	}
 	game.currentBlock.Move(1, 0)
-	if game.IsBlockOutside() {
+	if game.IsBlockOutside() || !game.BlockFits() {
 		game.currentBlock.Move(-1, 0)
+		game.LockBlock()
 	}
 }
 
 func (game *Game) RotateBlock() {
+	if game.GameOver {
+		return
+	}
 	game.currentBlock.Rotate()
-	for game.IsBlockOutside() {
-		game.currentBlock.Rotate()
+	if game.IsBlockOutside() || !game.BlockFits() {
+		game.currentBlock.UndoRotate()
 	}
 }
 
@@ -104,4 +121,38 @@ func (game *Game) IsBlockOutside() bool {
 		}
 	}
 	return false
+}
+
+func (game *Game) LockBlock() {
+	if game.GameOver {
+		return
+	}
+	tiles := game.currentBlock.GetCurrentPositions()
+	for _, tile := range tiles {
+		game.grid.Cells[tile.Row][tile.Column] = game.currentBlock.Color
+	}
+	game.currentBlock = game.nextBlock
+	game.nextBlock = game.GetRandomBlock()
+	if !game.BlockFits() {
+		game.GameOver = true
+	}
+	game.grid.ClearFullRows()
+}
+
+func (game *Game) BlockFits() bool {
+	tiles := game.currentBlock.GetCurrentPositions()
+	for _, tile := range tiles {
+		if !game.grid.IsCellEmpty(tile.Row, tile.Column) {
+			return false
+		}
+	}
+	return true
+}
+
+func (g *Game) Reset() {
+	g.grid = Grid{}
+	g.blocks = GetAllBlocks()
+	g.currentBlock = g.GetRandomBlock()
+	g.nextBlock = g.GetRandomBlock()
+	g.GameOver = false
 }

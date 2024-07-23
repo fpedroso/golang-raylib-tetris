@@ -46,3 +46,41 @@ func (grid Grid) IsCellOutside(row int, column int) bool {
 
 	return false
 }
+
+func (grid Grid) IsCellEmpty(row int, column int) bool {
+	return grid.Cells[row][column] == 0
+}
+
+func (grid Grid) IsRowFull(row int) bool {
+	for col := range constants.Cols {
+		if grid.IsCellEmpty(row, col) {
+			return false
+		}
+	}
+	return true
+}
+
+func (grid *Grid) ClearRow(row int) {
+	for col := range constants.Cols {
+		grid.Cells[row][col] = 0
+	}
+}
+
+func (grid *Grid) MoveRowDown(row int, numRows int) {
+	for col := range constants.Cols {
+		grid.Cells[row+numRows][col] = grid.Cells[row][col]
+		grid.Cells[row][col] = 0
+	}
+}
+
+func (grid *Grid) ClearFullRows() {
+	completed := 0
+	for row := constants.Rows - 1; row >= 0; row-- {
+		if grid.IsRowFull(row) {
+			grid.ClearRow(row)
+			completed++
+		} else if completed > 0 {
+			grid.MoveRowDown(row, completed)
+		}
+	}
+}

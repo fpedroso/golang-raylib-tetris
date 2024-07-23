@@ -6,7 +6,7 @@ import (
 )
 
 type Block struct {
-	color     int
+	Color     int
 	state     int
 	cells     [4][4]Position
 	rowOffset int
@@ -14,7 +14,7 @@ type Block struct {
 }
 
 func NewBlock(color int) Block {
-	b := Block{color: color}
+	b := Block{Color: color}
 	b.colOffset = 3
 	return b
 }
@@ -26,6 +26,13 @@ func (block *Block) Rotate() {
 	}
 }
 
+func (block *Block) UndoRotate() {
+	block.state--
+	if block.state < 0 {
+		block.state = 3
+	}
+}
+
 func (block Block) Draw() {
 	positions := block.GetCurrentPositions()
 	for _, position := range positions {
@@ -33,7 +40,7 @@ func (block Block) Draw() {
 		posY := (position.Row * constants.CellSize) + 1
 		width := constants.CellSize - 1
 		height := constants.CellSize - 1
-		color := constants.Colors[block.color]
+		color := constants.Colors[block.Color]
 		rl.DrawRectangle(int32(posX), int32(posY), int32(width), int32(height), color)
 	}
 }
