@@ -61,7 +61,7 @@ func (game Game) Draw() {
 	game.nextBlock.Draw(450, 270)
 }
 
-func (game *Game) HandleInput() {
+func (game *Game) HandleInput(eventTriggered TimeHandler) {
 	if game.GameOver {
 		if rl.IsKeyPressed(rl.KeyEnter) {
 			game.Reset()
@@ -74,8 +74,10 @@ func (game *Game) HandleInput() {
 	case rl.IsKeyPressed(rl.KeyRight):
 		game.MoveBlockRight()
 	case rl.IsKeyDown(rl.KeyDown):
-		game.MoveBlockDown()
-		game.UpdateScore(0, 1)
+		if eventTriggered(50) {
+			game.MoveBlockDown()
+			game.UpdateScore(0, 1)
+		}
 	case rl.IsKeyPressed(rl.KeyUp):
 		game.RotateBlock()
 	}

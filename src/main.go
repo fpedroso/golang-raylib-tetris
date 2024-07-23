@@ -11,6 +11,8 @@ import (
 
 var lastUpdateMilli = int64(0)
 
+type TimeHandler func(int64) bool
+
 func EventTriggered(intervalMilli int64) bool {
 	timeMilli := time.Now().UnixMilli()
 	if timeMilli-lastUpdateMilli >= intervalMilli {
@@ -46,7 +48,7 @@ func main() {
 		if !game.GameOver {
 			rl.UpdateMusicStream(music)
 		}
-		game.HandleInput()
+		game.HandleInput(EventTriggered)
 		if EventTriggered(500) {
 			game.MoveBlockDown()
 		}
