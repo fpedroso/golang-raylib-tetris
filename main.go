@@ -49,7 +49,7 @@ func main() {
 			rl.UpdateMusicStream(music)
 		}
 		game.HandleInput(EventTriggered)
-		if EventTriggered(500) {
+		if EventTriggered(game.grid.Speed) {
 			game.MoveBlockDown()
 		}
 		rl.BeginDrawing()

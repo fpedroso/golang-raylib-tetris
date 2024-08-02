@@ -21,6 +21,7 @@ type Game struct {
 func NewGame() Game {
 	g := Game{}
 	g.grid = Grid{}
+	g.grid.Speed = 500
 	g.blocks = GetAllBlocks()
 	g.currentBlock = g.GetRandomBlock()
 	g.nextBlock = g.GetRandomBlock()
@@ -167,6 +168,7 @@ func (game *Game) BlockFits() bool {
 
 func (g *Game) Reset() {
 	g.grid = Grid{}
+	g.grid.Speed = 500
 	g.blocks = GetAllBlocks()
 	g.currentBlock = g.GetRandomBlock()
 	g.nextBlock = g.GetRandomBlock()

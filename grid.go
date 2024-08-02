@@ -10,6 +10,7 @@ import (
 
 type Grid struct {
 	Cells [constants.Rows][constants.Cols]int
+	Speed int64
 }
 
 func (grid Grid) Print() {
@@ -82,6 +83,10 @@ func (grid *Grid) ClearFullRows() int {
 		} else if completed > 0 {
 			grid.MoveRowDown(row, completed)
 		}
+	}
+	grid.Speed -= int64(completed * 10)
+	if grid.Speed < 0 {
+		grid.Speed = 0
 	}
 	return completed
 }
