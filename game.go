@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	blocks "github.com/fpedroso/golang-raylib-tetris/blocks"
+	constants "github.com/fpedroso/golang-raylib-tetris/constants"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -81,7 +82,13 @@ func (game *Game) HandleInput(eventTriggered TimeHandler) {
 		}
 	case rl.IsKeyPressed(rl.KeyUp):
 		game.RotateBlock()
+	case rl.IsKeyPressed(rl.KeySpace):
+		game.SwitchBlock()
 	}
+}
+
+func (game *Game) SwitchBlock() {
+	// TODO
 }
 
 func (game *Game) MoveBlockLeft() {
@@ -120,7 +127,9 @@ func (game *Game) RotateBlock() {
 		return
 	}
 	game.currentBlock.Rotate()
-	if game.IsBlockOutside() || !game.BlockFits() {
+	if game.IsBlockOutside() {
+		game.MoveBlockInside()
+	} else if !game.BlockFits() {
 		game.currentBlock.UndoRotate()
 	}
 }
@@ -133,6 +142,24 @@ func (game *Game) IsBlockOutside() bool {
 		}
 	}
 	return false
+}
+
+func (game *Game) MoveBlockInside() {
+	lowestColumnOutside := 0
+	highestColumnOutside := constants.Cols - 1
+	columnFix := 0
+	tiles := game.currentBlock.GetCurrentPositions()
+	for _, tile := range tiles {
+		if tile.Column < lowestColumnOutside {
+			lowestColumnOutside = tile.Column
+			columnFix = -1 * lowestColumnOutside
+		}
+		if tile.Column > highestColumnOutside {
+			highestColumnOutside = tile.Column
+			columnFix = constants.Cols - (highestColumnOutside + 1)
+		}
+	}
+	game.currentBlock.Move(0, columnFix)
 }
 
 func (game *Game) LockBlock() {

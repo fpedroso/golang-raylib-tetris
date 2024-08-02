@@ -29,19 +29,19 @@ func main() {
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
 
-	music := rl.LoadMusicStream("./__assets/sounds/levelmusic.wav")
+	music := rl.LoadMusicStream("./assets/sounds/levelmusic.wav")
 	defer rl.UnloadMusicStream(music)
 
 	rl.PlayMusicStream(music)
 
-	font := rl.LoadFontEx("./__assets/fonts/Prisma.ttf", 64, nil, 0)
+	font := rl.LoadFontEx("./assets/fonts/Prisma.ttf", 64, nil, 0)
 
 	game := NewGame()
 
-	game.ClearSound = rl.LoadSound("./__assets/sounds/lineclear.wav")
+	game.ClearSound = rl.LoadSound("./assets/sounds/lineclear.wav")
 	defer rl.UnloadSound(game.ClearSound)
 
-	game.GameOverSound = rl.LoadSound("./__assets/sounds/gameover.wav")
+	game.GameOverSound = rl.LoadSound("./assets/sounds/gameover.wav")
 	defer rl.UnloadSound(game.GameOverSound)
 
 	for !rl.WindowShouldClose() {
