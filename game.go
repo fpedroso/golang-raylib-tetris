@@ -5,23 +5,24 @@ import (
 
 	blocks "github.com/fpedroso/golang-raylib-tetris/blocks"
 	constants "github.com/fpedroso/golang-raylib-tetris/constants"
+	statics "github.com/fpedroso/golang-raylib-tetris/statics"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Game struct {
-	grid          Grid
-	blocks        []blocks.Block
-	currentBlock  blocks.Block
-	nextBlock     blocks.Block
-	GameOver      bool
-	Score         int
-	ClearSound    rl.Sound
-	GameOverSound rl.Sound
+	grid         Grid
+	blocks       []blocks.Block
+	currentBlock blocks.Block
+	nextBlock    blocks.Block
+	GameOver     bool
+	Score        int
+	sounds       statics.Sounds
 }
 
-func NewGame() Game {
+func NewGame(sounds statics.Sounds) Game {
 	g := Game{}
 	g.grid = Grid{}
+	g.sounds = sounds
 	g.grid.Speed = 500
 	g.blocks = GetAllBlocks()
 	g.currentBlock = g.GetRandomBlock()
@@ -60,7 +61,14 @@ func (game *Game) RemoveBlock(index int) {
 func (game Game) Draw() {
 	game.grid.Draw()
 	game.currentBlock.Draw(0, 0)
-	game.nextBlock.Draw(450, 270)
+	game.DrawNext()
+}
+
+func (game Game) DrawNext() {
+	nextBlock := game.nextBlock
+	nextBlock.RowOffset = 0
+	nextBlock.ColOffset = 0
+	nextBlock.Draw(650, 250)
 }
 
 func (game *Game) HandleInput(eventTriggered TimeHandler) {
@@ -84,11 +92,16 @@ func (game *Game) HandleInput(eventTriggered TimeHandler) {
 		game.RotateBlock()
 	case rl.IsKeyPressed(rl.KeySpace):
 		game.SwitchBlock()
+		game.MoveBlockInside()
 	}
 }
 
 func (game *Game) SwitchBlock() {
-	// TODO
+	tempBlock := game.currentBlock
+	game.currentBlock = game.nextBlock
+	game.currentBlock.ColOffset = tempBlock.ColOffset
+	game.currentBlock.RowOffset = tempBlock.RowOffset
+	game.nextBlock = tempBlock
 }
 
 func (game *Game) MoveBlockLeft() {
@@ -170,15 +183,16 @@ func (game *Game) LockBlock() {
 	for _, tile := range tiles {
 		game.grid.Cells[tile.Row][tile.Column] = game.currentBlock.Color
 	}
+	game.nextBlock.ResetPosition()
 	game.currentBlock = game.nextBlock
 	game.nextBlock = game.GetRandomBlock()
 	if !game.BlockFits() {
-		rl.PlaySound(game.GameOverSound)
+		rl.PlaySound(game.sounds.GameOver)
 		game.GameOver = true
 	}
 	linesCleared := game.grid.ClearFullRows()
 	if linesCleared > 0 {
-		rl.PlaySound(game.ClearSound)
+		rl.PlaySound(game.sounds.ClearLine)
 		game.UpdateScore(linesCleared, 0)
 	}
 }

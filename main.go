@@ -5,6 +5,7 @@ import (
 	"time"
 
 	constants "github.com/fpedroso/golang-raylib-tetris/constants"
+	statics "github.com/fpedroso/golang-raylib-tetris/statics"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -23,30 +24,22 @@ func EventTriggered(intervalMilli int64) bool {
 }
 
 func main() {
-	rl.InitWindow((constants.Cols*constants.CellSize)+1+300, (constants.Rows*constants.CellSize)+1, "Golang Raylib Tetris (Nitris)")
+	rl.InitWindow((constants.Cols*constants.CellSize)+1+300, (constants.Rows*constants.CellSize)+1, "Nitris")
 	rl.SetTargetFPS(60)
 
-	rl.InitAudioDevice()
-	defer rl.CloseAudioDevice()
+	sounds := statics.NewSounds()
+	sounds.LoadSounds()
+	defer sounds.UnloadSounds()
 
-	music := rl.LoadMusicStream("./assets/sounds/levelmusic.wav")
-	defer rl.UnloadMusicStream(music)
-
-	rl.PlayMusicStream(music)
+	rl.PlayMusicStream(sounds.BackgroundMusic)
 
 	font := rl.LoadFontEx("./assets/fonts/Prisma.ttf", 64, nil, 0)
 
-	game := NewGame()
-
-	game.ClearSound = rl.LoadSound("./assets/sounds/lineclear.wav")
-	defer rl.UnloadSound(game.ClearSound)
-
-	game.GameOverSound = rl.LoadSound("./assets/sounds/gameover.wav")
-	defer rl.UnloadSound(game.GameOverSound)
+	game := NewGame(sounds)
 
 	for !rl.WindowShouldClose() {
 		if !game.GameOver {
-			rl.UpdateMusicStream(music)
+			rl.UpdateMusicStream(sounds.BackgroundMusic)
 		}
 		game.HandleInput(EventTriggered)
 		if EventTriggered(game.grid.Speed) {

@@ -9,13 +9,13 @@ type Block struct {
 	Color     int
 	state     int
 	cells     [4][4]Position
-	rowOffset int
-	colOffset int
+	RowOffset int
+	ColOffset int
 }
 
 func NewBlock(color int) Block {
 	b := Block{Color: color}
-	b.colOffset = 3
+	b.ColOffset = 3
 	return b
 }
 
@@ -46,8 +46,12 @@ func (block Block) Draw(offsetX int, offsetY int) {
 }
 
 func (block *Block) Move(rows int, columns int) {
-	block.rowOffset += rows
-	block.colOffset += columns
+	block.RowOffset += rows
+	block.ColOffset += columns
+}
+
+func (block *Block) ResetPosition() {
+	block.RowOffset = 0
 }
 
 func (block Block) GetCurrentPositions() []Position {
@@ -55,8 +59,8 @@ func (block Block) GetCurrentPositions() []Position {
 	movedPositions := make([]Position, 0)
 	for _, tile := range positions {
 		movedPositions = append(movedPositions, Position{
-			Row:    tile.Row + block.rowOffset,
-			Column: tile.Column + block.colOffset,
+			Row:    tile.Row + block.RowOffset,
+			Column: tile.Column + block.ColOffset,
 		})
 	}
 	return movedPositions
