@@ -9,13 +9,13 @@ import (
 )
 
 type Grid struct {
-	Cells [constants.Rows][constants.Cols]int
+	Cells [constants.RowCount][constants.ColCount]int
 	Speed int64
 }
 
 func (grid Grid) Print() {
-	for i := 0; i < constants.Rows; i++ {
-		for j := 0; j < constants.Cols; j++ {
+	for i := 0; i < constants.RowCount; i++ {
+		for j := 0; j < constants.ColCount; j++ {
 			fmt.Print(grid.Cells[i][j], " ")
 		}
 		fmt.Println()
@@ -23,8 +23,8 @@ func (grid Grid) Print() {
 }
 
 func (grid Grid) Draw() {
-	for row := 0; row < constants.Rows; row++ {
-		for column := 0; column < constants.Cols; column++ {
+	for row := 0; row < constants.RowCount; row++ {
+		for column := 0; column < constants.ColCount; column++ {
 			cellValue := grid.Cells[row][column]
 			posX := (column * constants.CellSize) + 1
 			posY := (row * constants.CellSize) + 1
@@ -37,11 +37,11 @@ func (grid Grid) Draw() {
 }
 
 func (grid Grid) IsCellOutside(row int, column int) bool {
-	if row < 0 || row >= constants.Rows {
+	if row < 0 || row >= constants.RowCount {
 		return true
 	}
 
-	if column < 0 || column >= constants.Cols {
+	if column < 0 || column >= constants.ColCount {
 		return true
 	}
 
@@ -53,7 +53,7 @@ func (grid Grid) IsCellEmpty(row int, column int) bool {
 }
 
 func (grid Grid) IsRowFull(row int) bool {
-	for col := range constants.Cols {
+	for col := range constants.ColCount {
 		if grid.IsCellEmpty(row, col) {
 			return false
 		}
@@ -62,13 +62,13 @@ func (grid Grid) IsRowFull(row int) bool {
 }
 
 func (grid *Grid) ClearRow(row int) {
-	for col := range constants.Cols {
+	for col := range constants.ColCount {
 		grid.Cells[row][col] = 0
 	}
 }
 
 func (grid *Grid) MoveRowDown(row int, numRows int) {
-	for col := range constants.Cols {
+	for col := range constants.ColCount {
 		grid.Cells[row+numRows][col] = grid.Cells[row][col]
 		grid.Cells[row][col] = 0
 	}
@@ -76,7 +76,7 @@ func (grid *Grid) MoveRowDown(row int, numRows int) {
 
 func (grid *Grid) ClearFullRows() int {
 	completed := 0
-	for row := constants.Rows - 1; row >= 0; row-- {
+	for row := constants.RowCount - 1; row >= 0; row-- {
 		if grid.IsRowFull(row) {
 			grid.ClearRow(row)
 			completed++

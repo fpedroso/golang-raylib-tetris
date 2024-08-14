@@ -24,17 +24,18 @@ func EventTriggered(intervalMilli int64) bool {
 }
 
 func main() {
-	rl.InitWindow((constants.Cols*constants.CellSize)+1+300, (constants.Rows*constants.CellSize)+1, "Nitris")
-	rl.SetTargetFPS(60)
+	rl.InitWindow((constants.ColCount*constants.CellSize)+constants.SidePanelWidth+1, (constants.RowCount*constants.CellSize)+1, constants.TextGameName)
+	rl.SetTargetFPS(constants.FramesPerSecond)
 
 	sounds := statics.NewSounds()
 	sounds.LoadSounds()
 	defer sounds.UnloadSounds()
 
+	fonts := statics.NewFonts()
+	fonts.LoadFonts()
+	defer fonts.UnloadFonts()
+
 	rl.PlayMusicStream(sounds.BackgroundMusic)
-
-	font := rl.LoadFontEx("./assets/fonts/Prisma.ttf", 64, nil, 0)
-
 	game := NewGame(sounds)
 
 	for !rl.WindowShouldClose() {
@@ -48,15 +49,15 @@ func main() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.DarkBlue)
 
-		rl.DrawTextEx(font, "Score", rl.NewVector2(655, 15), 38, 2, rl.White)
+		rl.DrawTextEx(fonts.Regular, constants.TextScore, rl.NewVector2(655, 15), 38, 2, rl.White)
 		rl.DrawRectangleRounded(rl.NewRectangle(615, 55, 270, 60), 0.3, 6, rl.LightGray)
-		rl.DrawTextEx(font, strconv.Itoa(game.Score), rl.NewVector2(655, 65), 38, 2, rl.Black)
+		rl.DrawTextEx(fonts.Regular, strconv.Itoa(game.Score), rl.NewVector2(655, 65), 38, 2, rl.Black)
 
-		rl.DrawTextEx(font, "Next", rl.NewVector2(655, 125), 38, 2, rl.White)
+		rl.DrawTextEx(fonts.Regular, constants.TextNext, rl.NewVector2(655, 125), 38, 2, rl.White)
 		rl.DrawRectangleRounded(rl.NewRectangle(615, 175, 270, 270), 0.3, 6, rl.LightGray)
 
 		if game.GameOver {
-			rl.DrawTextEx(font, "GAME OVER", rl.NewVector2(605, 455), 38, 2, rl.White)
+			rl.DrawTextEx(fonts.Regular, constants.TextGameOver, rl.NewVector2(605, 455), 38, 2, rl.White)
 		}
 
 		game.Draw()

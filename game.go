@@ -159,7 +159,7 @@ func (game *Game) IsBlockOutside() bool {
 
 func (game *Game) MoveBlockInside() {
 	lowestColumnOutside := 0
-	highestColumnOutside := constants.Cols - 1
+	highestColumnOutside := constants.ColCount - 1
 	columnFix := 0
 	tiles := game.currentBlock.GetCurrentPositions()
 	for _, tile := range tiles {
@@ -169,7 +169,7 @@ func (game *Game) MoveBlockInside() {
 		}
 		if tile.Column > highestColumnOutside {
 			highestColumnOutside = tile.Column
-			columnFix = constants.Cols - (highestColumnOutside + 1)
+			columnFix = constants.ColCount - (highestColumnOutside + 1)
 		}
 	}
 	game.currentBlock.Move(0, columnFix)

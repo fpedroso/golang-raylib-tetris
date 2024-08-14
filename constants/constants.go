@@ -2,6 +2,19 @@ package constants
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
+const FramesPerSecond = 60
+
+const RowCount = 20
+const ColCount = 10
+const CellSize = 60
+
+const SidePanelWidth = 300
+
+const TextGameName = "Nitris"
+const TextScore = "Score"
+const TextNext = "Next"
+const TextGameOver = "Game Over"
+
 var Colors = map[int]rl.Color{
 	0: rl.NewColor(26, 31, 40, 255),   // dark grey
 	1: rl.NewColor(47, 230, 23, 255),  // green

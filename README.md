@@ -11,4 +11,5 @@ learning more stuff
 
 - add levels for each X lines cleared, each Level has their own speed
 - (tec) remove Speed from grid.go
-- refactor...
+- add home screen / game screen
+- add multiple languages
